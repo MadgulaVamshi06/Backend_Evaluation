@@ -14,7 +14,7 @@
       "user_id": 23,
       "symbol": "ABX",
       "shares": 30,
-      "price": 134
+      "price": 400
     },
     {
       "id": 3,
@@ -26,4 +26,3 @@
     }
   ]
 }
-
