@@ -25,45 +25,52 @@ const logFormat =':method :url :status : response-time ms - :date';
 
 app.use(morgan(logFormat,{stream:accessLogStream}));
 
-// read database 
- const readFile = () =>{
-    try {
-        const data = fs.readFileSync("db.json");
-        return JSON.parse(data);
-    } catch (error) {
-        console.log("Error in Reading database",error);
-    }
- }
-
- // write database
- const writeFile = () =>{
-    try {
-        fs.writeFileSync("db.json"),JSON.stringify(data,null,2);
-    } catch (error) {
-        console.log("Error in writing database",error)
-    }
- }
-
  // Routes
 
  //get
  app.get("/trades",(req,res)=>{
-    const db = readFile();
-    res.json(db.trades);
-    res.status(200).send("reterived data successfully")
- })
+    const data = JSON.parse(
+        fs.readFileSync(path.join(__dirname,"db.json"),"utf-8")
+    );
+    res.status(200).send(data)
+ });
+ 
+ 
+ //get by id
+ app.get("/trades/:id",(req,res)=>{
+    const tradeId = req.params.id;
+    console.log(tradeId)
+    try {
+        const data = JSON.parse(
+            fs.readFileSync(path.join(__dirname,"db.json"),"utf-8")
+        );
+        const trade = data.trades.find(trade =>trade.id === tradeId);
+
+        if(trade){
+            res.status(200).send(trade)
+        }else{
+            res.send(404),send({message : "ID not found"})
+        }
+    } catch (error) {
+       console.log(error)
+       res.status(500),send({message : "Internal issue"})
+    }
+    
+ });
 
  //post
 
  app.post("/trades",(req,res) =>{
- const db = readFile();
-      
+ const newTrade = req.body;
+
+ const db = JSON.parse(
+    fs.readFileSync(path.join(__dirname,"db.json"),"utf-8")
+ )
   if(db.trades.some((trades)=>trades.id === req.body.id)){
      return res.status(400).json({message : "id must be unique"})
   }
-
-  db.trades.push(req.body)
-  writeFile(db);
+  db.trades.push(newTrade)
+ fs.writeFileSync(path.join(__dirname,"db.json"),JSON.stringify(db,null,2),"utf-8");
   res.status(201).json({message : "trade added successfully"})
  })
 
