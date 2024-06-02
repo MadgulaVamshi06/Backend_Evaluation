@@ -16,9 +16,15 @@ const accessLogStream = fs.createWriteStream(path.join(accessLogPath),
 {
     flags : "a",
 })
+
+morgan.token('date', function(){
+    return new Date().toString();
+});
+
 const logFormat =':method :url :status : response-time ms - :date';
 
-app.use
+app.use(morgan(logFormat,{stream:accessLogStream}));
+
 // read database 
  const readFile = () =>{
     try {
@@ -32,7 +38,7 @@ app.use
  // write database
  const writeFile = () =>{
     try {
-        fs.writeFileSync("db.json",JSON.stringify(data,null,2));
+        fs.writeFileSync("db.json"),JSON.stringify(data,null,2);
     } catch (error) {
         console.log("Error in writing database",error)
     }
@@ -50,9 +56,15 @@ app.use
  //post
 
  app.post("/trades",(req,res) =>{
-    const db = readFile();
+ const db = readFile();
+      
+  if(db.trades.some((trades)=>trades.id === req.body.id)){
+     return res.status(400).json({message : "id must be unique"})
+  }
 
-    if(db.todos.some)
+  db.trades.push(req.body)
+  writeFile(db);
+  res.status(201).json({message : "trade added successfully"})
  })
 
  // server 

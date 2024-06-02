@@ -7,6 +7,14 @@
         "symbol": "ABX",
         "shares": 30,
         "price": 134
+      },
+      {
+        "id": 2,
+        "type": "buy",
+        "user_id": 23,
+        "symbol": "ABX",
+        "shares": 30,
+        "price": 134
       }
     ]
   }
